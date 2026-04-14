@@ -1,0 +1,17 @@
+[project]
+name = "hh-datajobs-elt"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+
+
+[dependency-groups]
+prod = [
+    "requests>=2.33.1",
+    "tenacity>=9.1.4",
+]
+dev = [
+    "requests>=2.33.1",
+    "tenacity>=9.1.4",
+]
