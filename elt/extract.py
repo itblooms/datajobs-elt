@@ -32,3 +32,9 @@ def fetch_api_data(
     except requests.exceptions.RequestException as exc:
         logger.error(f"Extraction failed with {exc}", exc_info=exc)
         raise
+
+
+def dump_to_temp(file_obj, items: list[dict[str, Any]]) -> None:
+    logger.info("Dumping JSON postings data into temporary file...")
+    for item in items:
+        file_obj.write(json.dumps(item) + "\n")
