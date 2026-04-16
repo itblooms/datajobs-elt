@@ -38,3 +38,40 @@ def dump_to_temp(file_obj, items: list[dict[str, Any]]) -> None:
     logger.info("Dumping JSON postings data into temporary file...")
     for item in items:
         file_obj.write(json.dumps(item) + "\n")
+
+
+def extract_api_data(
+    url: str,
+    params: dict[str, Any],
+    headers: dict[str, str],
+    timeout: int = 30
+) -> str:
+    total_fetched = 0
+    fetched_all = False
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False) as temp_file:
+        temp_file_path = temp_file.name
+        with requests.Session() as session:
+            while not fetched_all:
+                data = fetch_api_data(
+                    session=session,
+                    url=url,
+                    params=params,
+                    headers=headers,
+                    timeout=timeout
+                )
+                total_found = data.get("found", 0)
+                items = data.get("items", [])
+
+                if items:
+                    dump_to_temp(temp_file, items)
+                    total_fetched += len(items)
+                else:
+                    logger.warning("Received empty list of postings. Fetching stopped.")
+                    fetched_all = True
+
+                if total_fetched >= total_found:
+                    logger.info("Successfully fetched and saved all postings data.")
+                    fetched_all = True
+
+                params["page"] += 1
+    return temp_file_path
