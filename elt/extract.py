@@ -1,8 +1,9 @@
 import requests
 from tenacity import retry, stop_after_attempt, wait_exponential_jitter
+from typing import Any
 import json
 import tempfile
-from typing import Any
+from datetime import date
 from logger import get_logger
 
 
@@ -75,3 +76,11 @@ def extract_api_data(
 
                 params["page"] += 1
     return temp_file_path
+
+
+def load_into_s3(s3_client, s3_bucket_name: str, s3_prefix: str, file_path: str) -> None:
+    s3_file_name = date.today().isoformat()
+    s3_key = f"{s3_prefix}/{s3_file_name}.json"
+    logger.info(f"Uploading {file_path} to s3://{s3_bucket_name}/{s3_key} ...")
+    s3_client.upload_file(file_path, s3_bucket_name, s3_key)
+    logger.info("File successfully uploaded!")
