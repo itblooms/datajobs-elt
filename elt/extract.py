@@ -4,7 +4,7 @@ from typing import Any
 import json
 import tempfile
 from datetime import date
-from logger import get_logger
+from .logger import get_logger
 
 
 logger = get_logger(__name__)
@@ -12,17 +12,17 @@ logger = get_logger(__name__)
 
 @retry(
     stop=stop_after_attempt(7),
-    wait=wait_exponential_jitter(initial=1, max=60, jitter=1)
+    wait=wait_exponential_jitter(initial=1, max=60, jitter=1),
 )
 def fetch_api_data(
     session: requests.Session,
     url: str,
     params: dict[str, Any],
     headers: dict[str, str],
-    timeout: int = 30
+    timeout: int = 30,
 ) -> dict[str, Any]:
     try:
-        logger.info(f"Fetching job postings data from {url}...")
+        logger.info(f"Fetching job postings data from {url} ...")
         response = session.get(url=url, params=params, headers=headers, timeout=timeout)
         response.raise_for_status()
         logger.info("Page of job postings data successfully fetched.")
@@ -45,20 +45,19 @@ def extract_api_data(
     url: str,
     params: dict[str, Any],
     headers: dict[str, str],
-    timeout: int = 30
+    timeout: int = 30,
 ) -> str:
     total_fetched = 0
-    fetched_all = False
     with tempfile.NamedTemporaryFile(mode="w+", delete=False) as temp_file:
         temp_file_path = temp_file.name
         with requests.Session() as session:
-            while not fetched_all:
+            while True:
                 data = fetch_api_data(
                     session=session,
                     url=url,
                     params=params,
                     headers=headers,
-                    timeout=timeout
+                    timeout=timeout,
                 )
                 total_found = data.get("found", 0)
                 items = data.get("items", [])
@@ -68,12 +67,12 @@ def extract_api_data(
                     total_fetched += len(items)
                 else:
                     logger.warning("Received empty list of postings. Fetching stopped.")
-                    fetched_all = True
+                    break
 
                 if total_fetched >= total_found:
                     logger.info("Successfully fetched and saved all postings data.")
-                    fetched_all = True
-
+                    break
+                params = params.copy()
                 params["page"] += 1
     return temp_file_path
 
