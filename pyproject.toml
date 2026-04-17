@@ -8,10 +8,29 @@ requires-python = ">=3.12"
 
 [dependency-groups]
 prod = [
+    "boto3>=1.42.89",
     "requests>=2.33.1",
     "tenacity>=9.1.4",
 ]
 dev = [
+    "boto3>=1.42.89",
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
     "requests>=2.33.1",
+    "ruff>=0.15.11",
     "tenacity>=9.1.4",
 ]
+
+[tool.ruff]
+line-length = 96
+indent-width = 4
+exclude = ["snowflake/"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+docstring-code-format = true
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
