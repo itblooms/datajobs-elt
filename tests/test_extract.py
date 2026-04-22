@@ -254,7 +254,7 @@ def test_extract_api_data_zero_found(
 
     mock_fetch.side_effect = [{"found": 0, "items": []}]
 
-    result_path = extract_api_data("https://api.example.com/jobs", {"page": 0}, {}, 30)
+    _ = extract_api_data("https://api.example.com/jobs", {"page": 0}, {}, 30)
 
     assert mock_dump.call_count == 0
     assert any(
