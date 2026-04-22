@@ -1,0 +1,6 @@
+sources:
+  - name: raw
+    database: datajobs
+    schema: raw
+    tables:
+      - name: hh_api 
