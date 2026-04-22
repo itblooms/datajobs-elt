@@ -1,0 +1,47 @@
+models:
+  - name: fct_job_postings
+    columns:
+      - name: id
+        data_tests: 
+          - unique
+          - not_null
+      - name: job_title
+        data_tests:
+          - not_null
+          - dbt_utils.not_empty_string
+      - name: requirenments
+        data_tests:
+          - not_null
+          - dbt_utils.not_empty_string
+      - name: employer_id
+        data_tests: 
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_employers')
+                field: id
+      - name: location_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_locations')
+                field: id
+
+  - name: dim_employers
+    columns:
+      - name: id
+        data_tests:
+          - not_null
+          - unique
+      - name: name
+        data_tests:
+          - not_null
+          - unique
+
+  - name: dim_locations
+    columns:
+      - name: id
+        data_tests:
+          - not_null
+          - unique
