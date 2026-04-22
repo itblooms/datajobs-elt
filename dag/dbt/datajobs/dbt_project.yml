@@ -1,0 +1,24 @@
+name: datajobs
+version: '1.0.0'
+profile: ohio_transforming
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  datajobs:
+    staging:
+      +materialized: incremental
+      +unique_key: id
+      +schema: staging
+    intermediate:
+      +materialized: incremental
+      +unique_key: id
+      +schema: intermediate
+    marts:
+      +materialized: incremental
+      +unique_key: id
+      +schema: marts
