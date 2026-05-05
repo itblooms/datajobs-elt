@@ -1,5 +1,5 @@
 {% set columns = [
-    'id',
+    'posting_id',
     'job_title',
     'salary_from',
     'salary_to',
@@ -23,7 +23,7 @@
 
 with enriched_postings as (
     select
-        id,
+        posting_id,
         job_title,
         regexp_substr(
             lower(job_title), 
@@ -54,4 +54,4 @@ with enriched_postings as (
     from {{ ref('stg_hh__job_postings') }}
 )
 
-select * from enriched_postings;
+select * from enriched_postings

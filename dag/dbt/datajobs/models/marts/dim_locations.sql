@@ -7,4 +7,4 @@ select
     street_name,
     building
 from {{ ref('int_job_postings__enriched') }}
-qualify row_number() over (partition by id order by id) = 1;
+qualify row_number() over (partition by id order by id) = 1

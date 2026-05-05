@@ -10,7 +10,7 @@ with flattened_jobs as (
         raw_json:snippet:requirenment::varchar as requirenments,
         raw_json:snippet:responsibility::varchar as responsibilities,
         raw_json:employer:id::int as employer_id,
-        raw_json:employer:name::int as employer_name,
+        raw_json:employer:name::varchar as employer_name,
         raw_json:employer:trusted::boolean as is_employer_trusted,
         raw_json:employer:country_id::int as country_id,
         raw_json:address:city::varchar as city_name,
@@ -18,11 +18,14 @@ with flattened_jobs as (
         raw_json:address:building::varchar as building,
         raw_json:employment_form:name::varchar as employment_form,
         raw_json:experience:id::varchar as experience,
-        string_agg(f.value:id::varchar, ', ') as work_formats,
+        listagg(distinct f.value:id::varchar, ', ') as work_formats,
         raw_json:working_hours[0]:id::varchar as working_hours,
         raw_json:work_schedule_by_days[0]:name::varchar as schedule,
         raw_json:internship::boolean as is_internship,
-        raw_json:created_at::timestamp_tz as created_at,
+        to_timestamp_tz(
+            raw_json:created_at::varchar, 
+            'YYYY-MM-DD"T"HH24:MI:SSTZHTZM'
+        ) as created_at,
         loaded_at,
         file_name
     from {{ source('raw', 'hh_api') }},
@@ -42,7 +45,7 @@ with flattened_jobs as (
 deduplecated_jobs as (
     select * 
     from flattened_jobs
-    qualify row_number() over (partition by id order by created_at desc) = 1
+    qualify row_number() over (partition by posting_id order by created_at desc) = 1
 ),
 datajobs_postings as (
     select *
@@ -57,7 +60,7 @@ datajobs_postings as (
 ),
 cleaned_datajobs_postings as (
     select
-        id,
+        posting_id,
         job_title,
         salary_from,
         salary_to,
@@ -89,7 +92,7 @@ cleaned_datajobs_postings as (
                 then '>' || regexp_substr(experience, '\\d+')
             else experience
         end as experience,
-        lower(work_format) as work_format,
+        lower(work_formats) as work_formats,
         regexp_substr(working_hours, '\\d+') as working_hours,
         lower(schedule) as schedule,
         is_internship,
@@ -99,4 +102,4 @@ cleaned_datajobs_postings as (
     from datajobs_postings
 )
 
-select * from cleaned_datajobs_postings;
+select * from cleaned_datajobs_postings
