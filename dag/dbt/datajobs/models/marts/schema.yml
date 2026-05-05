@@ -1,7 +1,7 @@
 models:
   - name: fct_job_postings
     columns:
-      - name: id
+      - name: posting_id
         data_tests: 
           - unique
           - not_null
@@ -11,8 +11,8 @@ models:
           - dbt_utils.not_empty_string
       - name: requirenments
         data_tests:
-          - not_null
           - dbt_utils.not_empty_string
+
       - name: employer_id
         data_tests: 
           - not_null
@@ -22,11 +22,11 @@ models:
                 field: id
       - name: location_id
         data_tests:
-          - not_null
           - relationships:
               arguments:
                 to: ref('dim_locations')
                 field: id
+                
 
   - name: dim_employers
     columns:

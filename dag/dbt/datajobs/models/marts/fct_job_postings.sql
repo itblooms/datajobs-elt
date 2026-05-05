@@ -1,5 +1,5 @@
 select
-    id,
+    posting_id,
     job_title,
     seniority_level,
     salary_from,
