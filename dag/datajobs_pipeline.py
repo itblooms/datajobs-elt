@@ -35,7 +35,7 @@ def datajobs_pipeline():
             from elt.extract import extract_api_data
             from elt.logger import get_logger
 
-            logger = get_logger(__name__)
+            logger = get_logger(__name__)  # noqa: F841
             ds = context["ds"]
             previous_ds = context["logical_date"].add(days=-1).strftime("%Y-%m-%d")
             url = "https://api.hh.ru/vacancies"
@@ -58,13 +58,13 @@ def datajobs_pipeline():
             return file_path
 
         @task
-        def load_to_s3(file_path, **context):
+        def load_to_s3(file_path):
             from airflow.providers.amazon.aws.hooks.s3 import S3Hook
             from airflow.sdk import Variable
             from elt.extract import load_into_s3
             from elt.logger import get_logger
 
-            logger = get_logger(__name__)
+            logger = get_logger(__name__)  # noqa: F841
 
             s3_client = S3Hook(aws_conn_id="s3_conn").get_conn()
             s3_bucket = f"{Variable.get('s3_bucket')}"
