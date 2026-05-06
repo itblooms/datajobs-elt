@@ -94,23 +94,31 @@ jobs:
         run: uv run dbt deps
 
       - name: Create profiles.yml
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+          SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
+          SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
         run: |
-            mkdir -p ~/.dbt
-            cat > ~/.dbt/profiles.yml << EOF
-            ohio_transforming:
-              target: ci
-              outputs:
-                ci:
-                  type: snowflake
-                  account: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-                  user: ${{ secrets.SNOWFLAKE_USER }}
-                  password: ${{ secrets.SNOWFLAKE_PASSWORD }}
-                  warehouse: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-                  database: ${{ secrets.SNOWFLAKE_DATABASE }}
-                  schema: ${{ secrets.SNOWFLAKE_SCHEMA }}
-                  role: ${{ secrets.SNOWFLAKE_ROLE }}
-                  threads: 4
-            EOF
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml << EOF
+          ohio_transforming:
+            target: ci
+            outputs:
+              ci:
+                type: snowflake
+                account: ${SNOWFLAKE_ACCOUNT}
+                user: ${SNOWFLAKE_USER}
+                password: ${SNOWFLAKE_PASSWORD}
+                warehouse: ${SNOWFLAKE_WAREHOUSE}
+                database: ${SNOWFLAKE_DATABASE}
+                schema: ${SNOWFLAKE_SCHEMA}
+                role: ${SNOWFLAKE_ROLE}
+                threads: 4
+          EOF
 
       - name: Lint SQL Models with sqlfluff
         run: uv run sqlfluff lint models/ --dialect snowflake
