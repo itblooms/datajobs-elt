@@ -29,10 +29,10 @@ with flattened_jobs as (
         loaded_at,
         file_name
     from {{ source('raw', 'hh_api') }},
-    lateral flatten(input => raw_json:work_format) as f
+    lateral flatten(input => raw_json:work_format) as f -- noqa: disable=LT02
 
     {% if is_incremental() %}
-    where loaded_at > (select max(loaded_at) from {{ this }})
+    where loaded_at > (select max(loaded_at) from {{ this }}) -- noqa: disable=LT02
     {% endif %}
 
     group by
