@@ -59,11 +59,11 @@ dialect = "snowflake"
 templater = "dbt"
 max_line_length = 100
 
-[tool.sqlfluff.rules.capitalization.keywords]
-capitalization_policy = "lower"
+[tool.sqlfluff.rules.capitalisation.keywords]
+capitalisation_policy = "lower"
 
-[tool.sqlfluff.rules.capitalization.identifiers]
-capitalization_policy = "lower"
+[tool.sqlfluff.rules.capitalisation.identifiers]
+capitalisation_policy = "lower"
 
 [tool.sqlfluff.rules.layout.indent]
 indent_unit = "space"
@@ -71,6 +71,6 @@ tab_space_size = 4
 
 [tool.sqlfluff.templater.dbt]
 project_dir = "./dag/dbt/datajobs"
-profiles_dir = "~/.dbt/"
+profiles_dir = "~/.dbt"
 profile = "ohio_transforming"
 target = "ci"
