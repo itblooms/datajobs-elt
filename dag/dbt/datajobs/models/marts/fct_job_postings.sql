@@ -12,15 +12,16 @@ select
     responsibilities,
     schedule,
     is_internship,
-    completness
+    completness,
     created_at,
     created_at_weekday,
     e.id as employer_id,
     l.id as location_id
-from {{ ref('int_job_postings__enriched') }} jp
-left join {{ ref('dim_employers') }} e on jp.employer_id = e.id
-left join {{ ref('dim_locations') }} l
-    on jp.country_id = l.country_id
-    and jp.city_name = l.city_name
-    and jp.street_name = l.street_name
-    and jp.building = l.building
+from {{ ref('int_job_postings__enriched') }} as jp
+left join {{ ref('dim_employers') }} as e on jp.employer_id = e.id
+left join {{ ref('dim_locations') }} as l
+    on
+        jp.country_id = l.country_id
+        and jp.city_name = l.city_name
+        and jp.street_name = l.street_name
+        and jp.building = l.building
