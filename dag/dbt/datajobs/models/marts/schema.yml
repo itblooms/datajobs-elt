@@ -1,5 +1,7 @@
 models:
   - name: fct_job_postings
+    config:
+      unique_key: posting_id
     columns:
       - name: posting_id
         data_tests: 
@@ -29,6 +31,8 @@ models:
                 
 
   - name: dim_employers
+    config:
+      unique_key: id
     columns:
       - name: id
         data_tests:
@@ -40,6 +44,8 @@ models:
           - unique
 
   - name: dim_locations
+    config:
+      unique_key: id
     columns:
       - name: id
         data_tests:

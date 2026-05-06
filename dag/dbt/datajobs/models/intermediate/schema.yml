@@ -1,0 +1,4 @@
+models:
+  - name: int_job_postings__enriched
+    config:
+      unique_key: posting_id

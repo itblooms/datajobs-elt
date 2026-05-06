@@ -12,13 +12,10 @@ models:
   datajobs:
     staging:
       +materialized: incremental
-      +unique_key: id
       +schema: staging
     intermediate:
       +materialized: incremental
-      +unique_key: id
       +schema: intermediate
     marts:
       +materialized: incremental
-      +unique_key: id
       +schema: marts
