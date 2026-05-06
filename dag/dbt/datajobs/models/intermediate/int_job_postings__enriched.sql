@@ -26,7 +26,7 @@ with enriched_postings as (
         posting_id,
         job_title,
         regexp_substr(
-            lower(job_title), 
+            lower(job_title),
             '(inter|junior|jr|associate|middle|mid|senior|sr|staff|lead)'
         ) as seniority_level,
         salary_from,

@@ -1,5 +1,5 @@
 with flattened_jobs as (
-    select 
+    select
         raw_json:id::int as posting_id,
         raw_json:name::varchar as job_title,
         raw_json:salary_range:from::int as salary_from,
@@ -23,41 +23,45 @@ with flattened_jobs as (
         raw_json:work_schedule_by_days[0]:name::varchar as schedule,
         raw_json:internship::boolean as is_internship,
         to_timestamp_tz(
-            raw_json:created_at::varchar, 
+            raw_json:created_at::varchar,
             'YYYY-MM-DD"T"HH24:MI:SSTZHTZM'
         ) as created_at,
         loaded_at,
         file_name
     from {{ source('raw', 'hh_api') }},
-    lateral flatten(input => raw_json:work_format) f
+    lateral flatten(input => raw_json:work_format) as f
 
     {% if is_incremental() %}
     where loaded_at > (select max(loaded_at) from {{ this }})
     {% endif %}
-    
-    group by posting_id, job_title, salary_from, salary_to, currency,
+
+    group by
+        posting_id, job_title, salary_from, salary_to, currency,
         is_gross, mode, requirenments, responsibilities, employer_id,
         employer_name, is_employer_trusted, country_id, city_name,
         street_name, building, employment_form, experience,
         working_hours, schedule, is_internship, created_at,
         loaded_at, file_name
 ),
+
 deduplecated_jobs as (
-    select * 
+    select *
     from flattened_jobs
     qualify row_number() over (partition by posting_id order by created_at desc) = 1
 ),
+
 datajobs_postings as (
     select *
     from deduplecated_jobs
-    where 
+    where
         regexp_like(lower(job_title), '.*(data|cloud).*(engineer|analyst|scientist|architect).*')
         or
         regexp_like(
-            lower(job_title), 
+            lower(job_title),
             '.*(ml|ai|nlp|llm|cv|rl|solution).*(engineer|researcher|architect|developer).*'
         )
 ),
+
 cleaned_datajobs_postings as (
     select
         posting_id,
@@ -86,7 +90,7 @@ cleaned_datajobs_postings as (
         case
             when experience = 'noExperience'
                 then '0'
-            when experience = 'between%And%' 
+            when experience = 'between%And%'
                 then regexp_replace(experience, 'between(\\d+)And(\\d+)', '\\1-\\2')
             when experience = 'moreThan%'
                 then '>' || regexp_substr(experience, '\\d+')
