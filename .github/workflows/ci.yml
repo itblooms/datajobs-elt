@@ -124,14 +124,14 @@ jobs:
         run: uv run sqlfluff lint models/ --dialect snowflake
 
       - name: dbt parse
-        run:
+        run: |
           uv run dbt parse \
             --project-dir . \
             --target ci \
             --log-level warn
 
       - name: dbt test
-        run:
+        run: |
           uv run dbt test \
             --project-dir . \
             --target ci \
