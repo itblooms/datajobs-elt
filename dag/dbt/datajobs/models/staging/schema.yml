@@ -1,0 +1,4 @@
+models:
+  - name: stg_hh__job_postings
+    config:
+      unique_key: posting_id
