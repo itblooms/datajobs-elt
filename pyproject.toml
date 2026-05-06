@@ -8,16 +8,35 @@ requires-python = ">=3.12"
 
 [dependency-groups]
 prod = [
+    "apache-airflow>=3.2.1",
+    "apache-airflow-providers-amazon>=9.26.0",
+    "apache-airflow-providers-snowflake>=6.12.2",
+    "asyncpg>=0.31.0",
     "boto3>=1.42.89",
+    "dbt-core>=1.11.8",
+    "dbt-snowflake>=1.11.4",
+    "psycopg2-binary>=2.9.12",
     "requests>=2.33.1",
+    "standalone>=1.0.1",
     "tenacity>=9.1.4",
 ]
 dev = [
+    "apache-airflow>=3.2.1",
+    "apache-airflow-providers-amazon>=9.26.0",
+    "apache-airflow-providers-snowflake>=6.12.2",
+    "astronomer-cosmos>=1.14.0",
+    "asyncpg>=0.31.0",
     "boto3>=1.42.89",
+    "dbt-core>=1.11.8",
+    "dbt-snowflake>=1.11.4",
+    "psycopg2-binary>=2.9.12",
     "pytest>=9.0.3",
     "pytest-cov>=7.1.0",
     "requests>=2.33.1",
     "ruff>=0.15.11",
+    "sqlfluff>=4.1.0",
+    "sqlfluff-templater-dbt>=4.1.0",
+    "standalone>=1.0.1",
     "tenacity>=9.1.4",
 ]
 
@@ -34,3 +53,24 @@ docstring-code-format = true
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+
+[tool.sqlfluff.core]
+dialect = "snowflake"
+templater = "dbt"
+max_line_length = 100
+
+[tool.sqlfluff.rules.capitalization.keywords]
+capitalization_policy = "lower"
+
+[tool.sqlfluff.rules.capitalization.identifiers]
+capitalization_policy = "lower"
+
+[tool.sqlfluff.rules.layout.indent]
+indent_unit = "space"
+tab_space_size = 4
+
+[tool.sqlfluff.templater.dbt]
+project_dir = "./dag/dbt/datajobs"
+profiles_dir = "~/.dbt/"
+profile = "ohio_transforming"
+target = "ci"
