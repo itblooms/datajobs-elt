@@ -54,11 +54,16 @@ datajobs_postings as (
     select *
     from deduplecated_jobs
     where
-        regexp_like(lower(job_title), '.*(data|cloud).*(engineer|analyst|scientist|architect).*')
-        or
-        regexp_like(
-            lower(job_title),
-            '.*(ml|ai|nlp|llm|cv|rl|solution).*(engineer|researcher|architect|developer).*'
+        employer_id is not null
+        and (
+            regexp_like(
+                lower(job_title), '.*(data|cloud).*(engineer|analyst|scientist|architect).*'
+            )
+            or
+            regexp_like(
+                lower(job_title),
+                '.*(ml|ai|nlp|llm|cv|rl|solution).*(engineer|researcher|architect|developer).*'
+            )
         )
 ),
 
