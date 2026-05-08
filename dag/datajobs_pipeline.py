@@ -105,7 +105,7 @@ def datajobs_pipeline():
         ),
     )
 
-    @task
+    @task(trigger_rule="all_done")
     def stop_ec2_instance():
         import boto3
         from airflow.sdk import Variable
