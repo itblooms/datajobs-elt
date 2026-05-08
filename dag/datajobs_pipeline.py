@@ -105,8 +105,17 @@ def datajobs_pipeline():
         ),
     )
 
+    @task
+    def stop_ec2_instance():
+        import boto3
+        from airflow.sdk import Variable
+
+        ec2_instance = Variable.get("ec2_instance")
+        boto3.client("ec2", region_name="us-east-2").stop_instances(InstanceIds=[ec2_instance])
+
     extract_data_obj = extract_data()
-    chain(extract_data_obj, load_to_snoflake, dbt_tasks)
+    stop_ec2_instance_obj = stop_ec2_instance()
+    chain(extract_data_obj, load_to_snoflake, dbt_tasks, stop_ec2_instance_obj)
 
 
 datajobs_pipeline()
