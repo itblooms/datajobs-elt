@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from cosmos.airflow.task_group import DbtTaskGroup
 from cosmos.config import ProfileConfig, ProjectConfig, RenderConfig
@@ -5,6 +6,7 @@ from cosmos.profiles import SnowflakeUserPasswordProfileMapping
 from cosmos.constants import TestBehavior
 from airflow.sdk import dag, task, task_group, chain
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
+from airflow.providers.smtp.notifications.smtp import SmtpNotifier
 from pendulum import datetime
 
 
@@ -17,6 +19,8 @@ project_config = ProjectConfig(
     dbt_project_path=(Path(__file__).parent / "dbt/datajobs").absolute().as_posix()
 )
 
+_smtp_conn = os.getenv("AIRFLOW_CONN_SMTP_DEFAULT")
+
 
 @dag(
     dag_id="datajobs_pipeline",
@@ -24,6 +28,14 @@ project_config = ProjectConfig(
     start_date=datetime(2026, 5, 3),
     catchup=False,
     default_args={"retries": 2},
+    on_failure_callback=(
+        SmtpNotifier(
+            to=os.getenv("EMAIL", ""),
+            from_email=os.getenv("EMAIL", ""),
+            subject="DAG {{ dag.dag_id }} failed at {{ ds_nodash }}",
+        )
+        if _smtp_conn else None
+    ),
 )
 def datajobs_pipeline():
 
