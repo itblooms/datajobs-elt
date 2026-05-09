@@ -34,7 +34,8 @@ _smtp_conn = os.getenv("AIRFLOW_CONN_SMTP_DEFAULT")
             from_email=os.getenv("EMAIL", ""),
             subject="DAG {{ dag.dag_id }} failed at {{ ds_nodash }}",
         )
-        if _smtp_conn else None
+        if _smtp_conn
+        else None
     ),
 )
 def datajobs_pipeline():
