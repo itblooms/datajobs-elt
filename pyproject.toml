@@ -10,6 +10,7 @@ requires-python = ">=3.12"
 prod = [
     "apache-airflow>=3.2.1",
     "apache-airflow-providers-amazon>=9.26.0",
+    "apache-airflow-providers-smtp>=2.4.5",
     "apache-airflow-providers-snowflake>=6.12.2",
     "asyncpg>=0.31.0",
     "boto3>=1.42.89",
@@ -23,6 +24,7 @@ prod = [
 dev = [
     "apache-airflow>=3.2.1",
     "apache-airflow-providers-amazon>=9.26.0",
+    "apache-airflow-providers-smtp>=2.4.5",
     "apache-airflow-providers-snowflake>=6.12.2",
     "astronomer-cosmos>=1.14.0",
     "asyncpg>=0.31.0",
