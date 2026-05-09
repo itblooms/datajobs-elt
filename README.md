@@ -68,3 +68,40 @@ Surrogate keys in `dim_locations` are generated with `dbt_utils.generate_surroga
 EC2 instance where the pipelins is running starts on CRON schdeule.
 
 ![Starter](docs/aws_pipeline_start.png)
+
+---
+
+## Setup
+
+Clone the repository
+```bash
+git clone https://github.com/lothrique/datajobs-etl.git
+cd datajobs-etl
+```
+
+Run setup script
+```bash
+./pipeline_setup.sh \
+  --region aws_region \
+  --aws_account_id your_aws_account_id \
+  --email youremail@gmail.com \
+  --password your_gmail_app_password
+```
+It will print username and password, which can be used to login into Airflow UI.
+If everything is already set up, run
+```bash
+source .venv/bin/activate
+source .env
+```
+To start airflow run
+```bash
+airflow api-server & airflow dag-processor & airflow scheduler & airflow triggerer
+```
+Then configure connections and variables:
+- `aws_default` - connection used for EC2 instance
+- `s3_conn` - connection to S3 bucket
+- `snowflake_conn` - connection to Snowflake
+- `HH_ACCESS_TOKEN` - access token for HeadHunter API
+- `ec2_instance` - EC2 instance name
+- `s3_bucket` - S3 bucket name
+- `s3_prefix` - S3 bucket prefix
