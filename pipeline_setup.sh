@@ -77,6 +77,7 @@ export AIRFLOW__CORE__DAGS_FOLDER=$HOME/datajobs-elt/dag
 export AIRFLOW__CORE__EXECUTOR=LocalExecutor
 export AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_USERS=admin:admin
 export AIRFLOW__CORE__LOAD_EXAMPLES=False
+export AIRFLOW__CORE__TEST_CONNECTION=Enabled
 EOF
 
 # setup remote logging to CloudWatch
@@ -90,10 +91,10 @@ EOF
 if [[ -n "$EMAIL" && -n "$PASSWORD" ]]; then
     cat >> $ENV_FILE <<EOF
 export EMAIL="$EMAIL"
-export AIRFLOW_CONN_SMTP_DEFAULT=$(printf '{"conn_type":"smtp","host":"smtp.gmail.com","login":"%s","password":"%s","port":587,"extra":{"disable_ssl":true}}' "$EMAIL" "$PASSWORD"
+export AIRFLOW_CONN_SMTP_DEFAULT=$(printf '{"conn_type":"smtp","host":"smtp.gmail.com","login":"%s","password":"%s","port":587,"extra":{"disable_ssl":true}}' "$EMAIL" "$PASSWORD")
 EOF
 else
-    echo "WAWS_ACCOUNT_IDing: --email and --password are not provided, email alerts will not be set up"
+    echo "Warning: --email and --password are not provided, email alerts will not be set up"
 fi
 
 source $ENV_FILE
@@ -103,8 +104,10 @@ source $ENV_FILE
 uv run airflow db migrate
 
 
-AIRFLOW_USER=$(jq -r "unsorted_keys[0]" ~/airflow/simple_auth_manager_passwords.json.generated)
+uv run airflow api-server & sleep 30 && pkill -9 -f airflow
+AIRFLOW_USER=$(jq -r "keys[0]" ~/airflow/simple_auth_manager_passwords.json.generated)
 AIRFLOW_PASSWORD=$(jq -r ".\"$AIRFLOW_USER\"" ~/airflow/simple_auth_manager_passwords.json.generated)
+
 
 echo ""
 echo "----------------------------------"
@@ -115,4 +118,6 @@ echo "----------------------------------"
 echo ""
 echo "Setup AWS, Snowflake and S3 connections, and variables in Airflow UI"
 echo "To start airflow run:"
+echo "source .venv/bin/activate && source .env"
 echo "airflow api-server & airflow dag-processor & airflow scheduler & airflow triggerer"
+echo ""
